@@ -21,8 +21,8 @@ const useStyles = makeStyles(() => ({
   paper: {
     backgroundColor: '#ffffff', // Define el color manualmente en lugar de usar el tema
     position: 'absolute',
-    width: 400,
-    border: '2px solid #000',
+    width: 290,
+    border: '1px solid #lightgray',
     boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.12)', // Definir sombra manualmente
     padding: '16px 32px 24px', // Define el padding manualmente
   },
