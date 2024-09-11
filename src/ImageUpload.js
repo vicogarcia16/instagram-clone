@@ -50,7 +50,7 @@ function ImageUpload({authToken, authTokenType, userId}) {
     const createPost = (imageUrl) => {
         const json_string = JSON.stringify({
             'image_url': imageUrl,
-            'image_url_type': 'relative',
+            'image_url_type': 'absolute',
             'caption': caption,
             'creator_id': userId
         })
