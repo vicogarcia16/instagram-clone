@@ -3,12 +3,12 @@
   "name": "Instagram Clone App",
   "icons": [
     {
-      "src": "insta.png",
+      "src": "instagram-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "insta.png",
+      "src": "instagram-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
