@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import Post from './Post';
 import { makeStyles } from '@mui/styles';
-import { Button, Modal, Input } from '@mui/material';
+import { Button, Modal, Input, Typography } from '@mui/material';
 import ImageUpload from './ImageUpload';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -19,12 +19,12 @@ function getModalStyle() {
 
 const useStyles = makeStyles(() => ({
   paper: {
-    backgroundColor: '#ffffff', // Define el color manualmente en lugar de usar el tema
+    backgroundColor: '#ffffff',
     position: 'absolute',
     width: 290,
     border: '1px solid #lightgray',
-    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.12)', // Definir sombra manualmente
-    padding: '16px 32px 24px', // Define el padding manualmente
+    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.12)',
+    padding: '16px 32px 24px',
   },
 }));
 
@@ -36,18 +36,19 @@ function App() {
   const [modalStyle, setModalStyle] = useState(getModalStyle);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [authToken, setAuthToken] = useState(null); // Token
-  const [authTokenType, setAuthTokenType] = useState(null); // Token type
+  const [authToken, setAuthToken] = useState(null);
+  const [authTokenType, setAuthTokenType] = useState(null);
   const [userId, setUserId] = useState('');
   const [email, setEmail] = useState('');
+  const [signInError, setSignInError] = useState('');
+  const [signUpError, setSignUpError] = useState('');
 
-  // Cargar el token desde localStorage cuando el componente se monta
   useEffect(() => {
     const token = window.localStorage.getItem('authToken');
     const tokenType = window.localStorage.getItem('authTokenType');
     const savedUsername = window.localStorage.getItem('username');
     const savedUserId = window.localStorage.getItem('userId');
-    
+
     if (token && tokenType && savedUsername && savedUserId) {
       setAuthToken(token);
       setAuthTokenType(tokenType);
@@ -56,7 +57,6 @@ function App() {
     }
   }, []);
 
-  // Guardar el token en localStorage cada vez que el token cambia
   useEffect(() => {
     if (authToken) {
       window.localStorage.setItem('authToken', authToken);
@@ -71,7 +71,6 @@ function App() {
     }
   }, [authToken, authTokenType, username, userId]);
 
-  // Fetch posts cuando la app se carga
   useEffect(() => {
     fetch(BASE_URL + 'post/all/')
       .then(response => response.json())
@@ -90,33 +89,42 @@ function App() {
   }, []);
 
   const handleOpenSignIn = () => {
-    setUsername(''); // Limpiar campos
-    setPassword(''); 
-    setOpenSignIn(true); // Abrir modal
+    setUsername('');
+    setPassword('');
+    setSignInError(''); // Resetear error
+    setOpenSignIn(true);
   };
 
   const handleCloseSignIn = () => {
-    setUsername(''); // Limpiar campos
-    setPassword(''); 
-    setOpenSignIn(false); // Cerrar modal
+    setUsername('');
+    setPassword('');
+    setSignInError('');
+    setOpenSignIn(false);
   };
 
   const handleOpenSignUp = () => {
-    setUsername(''); // Limpiar campos
-    setPassword(''); 
+    setUsername('');
+    setPassword('');
     setEmail('');
-    setOpenSignUp(true); // Abrir modal
+    setSignUpError(''); // Resetear error
+    setOpenSignUp(true);
   };
 
   const handleCloseSignUp = () => {
-    setUsername(''); // Limpiar campos
-    setPassword(''); 
+    setUsername('');
+    setPassword('');
     setEmail('');
-    setOpenSignUp(false); // Cerrar modal
+    setSignUpError('');
+    setOpenSignUp(false);
   };
 
   const signIn = (event) => {
     event?.preventDefault();
+    if (!username || !password) {
+      setSignInError('Please fill in all fields.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
@@ -132,16 +140,14 @@ function App() {
         return response.json();
       })
       .then(data => {
-        console.log(data);
         setAuthToken(data.access_token);
         setAuthTokenType(data.token_type);
         setUserId(data.user_id);
         setUsername(data.username);
-       
       })
       .catch(error => {
         console.log(error);
-        alert('Login failed');
+        setSignInError('Login failed. Please check your credentials.');
       });
 
     handleCloseSignIn();
@@ -156,6 +162,11 @@ function App() {
 
   const signUp = (event) => {
     event?.preventDefault();
+    if (!username || !password || !email) {
+      setSignUpError('Please fill in all fields.');
+      return;
+    }
+
     const requestOption = {
       method: 'POST',
       headers: {
@@ -176,10 +187,11 @@ function App() {
       })
       .then(data => {
         signIn();
-    }).catch(error => {
+      })
+      .catch(error => {
         console.log(error);
-        alert('Sign up failed');
-    })
+        setSignUpError('Sign up failed. Please try again.');
+      });
     handleCloseSignUp();
   };
 
@@ -207,6 +219,7 @@ function App() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {signInError && <Typography color="error">{signInError}</Typography>}
             <Button type="submit" onClick={signIn}>
               Login
             </Button>
@@ -242,6 +255,7 @@ function App() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {signUpError && <Typography color="error">{signUpError}</Typography>}
             <Button type="submit" onClick={signUp}>
               Sign Up
             </Button>
@@ -267,22 +281,21 @@ function App() {
 
       <div className="app_posts">
         {posts.map(post => (
-          <Post key={post.id} post={post} 
-          authToken={authToken} 
-          authTokenType={authTokenType}
-          username={username}
+          <Post key={post.id} post={post}
+            authToken={authToken}
+            authTokenType={authTokenType}
+            username={username}
           />
         ))}
       </div>
 
       {authToken ? (
-        <ImageUpload authToken={authToken} 
-        authTokenType={authTokenType}
-        userId={userId} />
+        <ImageUpload authToken={authToken}
+          authTokenType={authTokenType}
+          userId={userId} />
       ) : (
         <h3 className="message">You need to login to upload images</h3>
       )}
-
     </div>
   );
 }
