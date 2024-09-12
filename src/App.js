@@ -199,7 +199,7 @@ function App() {
     <div className="app">
       <Modal open={openSignIn} onClose={handleCloseSignIn}>
         <div style={modalStyle} className={classes.paper}>
-          <form className="app_signin">
+          <form className="app_signin" onSubmit={signIn}>
             <center>
               <img
                 className="app_headerImage"
@@ -212,12 +212,14 @@ function App() {
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete='username'
             />
             <Input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete='current-password'
             />
             {signInError && <Typography color="error">{signInError}</Typography>}
             <Button type="submit" onClick={signIn}>
@@ -229,7 +231,7 @@ function App() {
 
       <Modal open={openSignUp} onClose={handleCloseSignUp}>
         <div style={modalStyle} className={classes.paper}>
-          <form className="app_signin">
+          <form className="app_signin" onSubmit={signUp}>
             <center>
               <img
                 className="app_headerImage"
@@ -242,18 +244,22 @@ function App() {
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete='username'
+              
             />
             <Input
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete='email'
             />
             <Input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete='new-password'
             />
             {signUpError && <Typography color="error">{signUpError}</Typography>}
             <Button type="submit" onClick={signUp}>
